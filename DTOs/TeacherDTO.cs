@@ -1,0 +1,48 @@
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace School_WepApi.DTOs
+{
+    public class TeacherDTO
+    {
+      
+            public int Id { get; set; }
+            [EmailAddress]
+            public string Email { get; set; } = string.Empty;
+            [MaxLength(20)]
+            public string PhoneNumber { get; set; } = string.Empty;
+            public string FullName { get; set; } = string.Empty;
+            public string DepartmentName { get; set; } = string.Empty;
+            [Required, Range(1, int.MaxValue)]
+            public int Salary { get; set; }
+        }
+        public class TeacherDTOEndPoint12
+        {
+            public int Id { get; set; }
+            public string FullName { get; set; } = string.Empty;
+        }
+        public class CreateTeacherDTO
+        {
+            [EmailAddress]
+            public string Email { get; set; } = string.Empty;
+            [MaxLength(20)]
+            public string PhoneNumber { get; set; } = string.Empty;
+            public string FirstName { get; set; } = string.Empty;
+            public string LastName { get; set; } = string.Empty;
+            [Required, Range(1, int.MaxValue)]
+            public int Salary { get; set; }
+            public int DepartmentId { get; set; }
+        }
+        public class UpdateTeacherDTO
+        {
+            [EmailAddress]
+            public string Email { get; set; } = string.Empty;
+            [MaxLength(20)]
+            public string PhoneNumber { get; set; } = string.Empty;
+            public string FirstName { get; set; } = string.Empty;
+            public string LastName { get; set; } = string.Empty;
+            [Required, Range(1, int.MaxValue)]
+            public int Salary { get; set; }
+            public int DepartmentId { get; set; }
+        }
+    
+}
