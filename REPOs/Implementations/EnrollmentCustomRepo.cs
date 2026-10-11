@@ -5,27 +5,38 @@ using Microsoft.EntityFrameworkCore;
 
 namespace School_WepApi.REPOs.Implementations
 {
-    public class EnrollmentCustomRepo : GenaricRepo <Enrollment> , IEnrollment
+    public class EnrollmentCustomRepo : GenaricRepo<Enrollment>, IEnrollment
     {
         private readonly AppDbContext _context;
         public EnrollmentCustomRepo(AppDbContext context) : base(context)
         {
             _context = context;
         }
-        public ICollection<Enrollment> GetEnrollmentsWithStudentAndSubject()
+
+        public async Task<IEnumerable<Enrollment>> GetByCourseAsync(int courseid)
         {
-            return _context.enrollments
-                .Include(x => x.Student)
-                .Include(x => x.Subject)
-                .ToList();
+            return await _context.enrollments
+                .Include(c => c.Course)
+                .Include(s => s.Student)
+                .Where(c => c.CourseId == courseid)
+                .ToListAsync();
         }
-        public Enrollment EndPoint6(int subjectid)
+
+        public async Task<IEnumerable<Enrollment>> GetByStudentAsync(int studentid)
         {
-            return  _context.enrollments
-                .Include(x => x.Subject)
-                .Include(x => x.Student)
-                .OrderBy(x => x.EnrollmentDate)
-                .Last(x => x.SubjectId == subjectid);
+            return await _context.enrollments
+                 .Include(c => c.Student)
+                 .Include(s => s.Student)
+                 .Where(s => s.StudentId == studentid)
+                 .ToListAsync();
+        }
+
+        public async Task<bool> IsStudentEnrolledAsync(int studentId, int courseId)
+        {
+            return await _context.enrollments
+                .AnyAsync(e =>
+                    e.StudentId == studentId &&
+                    e.CourseId == courseId);
         }
     }
 }

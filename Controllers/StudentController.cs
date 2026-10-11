@@ -11,86 +11,56 @@ namespace School_WepApi.Controllers
     [ApiController]
     public class StudentController : ControllerBase
     {
-        private readonly IStudent _customRepo;
-        private readonly IMapper _mapper;
+       private readonly IUnitOfWork _unitOfWork;
 
-        public StudentController(IMapper mapper, IStudent customRepo)
-        {
-            _mapper = mapper;
-            _customRepo = customRepo;
-        }
 
-        [HttpGet]
-        public IActionResult GetStudents()
-        {
-            var stud = _customRepo.IncludeClassRoom();
-
-            var res = _mapper.Map<List<StudentDTO>>(stud);
-
-            return Ok(res);
-        }
-
-        [HttpGet("{id}")]
-        public IActionResult GetById(int id)
-        {
-            var stud = _customRepo.GetById(id);
-
-            if (stud == null)
-                return BadRequest("Student Not Found");
-
-            var res = _mapper.Map<StudentDTO>(stud);
-
-            return Ok(res);
-        }
+       public StudentController(IUnitOfWork unitOfWork)
+       {
+            _unitOfWork = unitOfWork;
+       }
 
         [HttpPost]
-        public IActionResult CreateStudent(CreateStudentDTO dto)
+
+        public async Task<IActionResult> CreateStudent(StudentDTO dto)
         {
-            var student = _mapper.Map<Student>(dto);
+            if (dto == null)
+            {
+                return BadRequest("Student data is required");
+            }
 
-            if (student == null)
-                return BadRequest("Student Cannot Be Null");
+            var student = new Student
+            {
+                FullName = dto.FullName,
+                BirthDate = dto.BirthDate,
+                Email = dto.Email,
+                Gender = dto.Gender,
+                Phone = dto.Phone,
+            };
 
-            _customRepo.Add(student);
-          //  _customRepo.Save();
+            await _unitOfWork.Students.Add(student);
 
-            return CreatedAtAction(
-                nameof(GetById),
-                new { id = student.Id },
-                student
-            );
+            await _unitOfWork.Save();
+
+            var result = new ReadStudentDto
+            {
+                Id = student.Id,
+                FullName = student.FullName,
+                Email = student.Email,
+                Phone = student.Phone,
+                BirthDate = student.BirthDate,
+                Gender = student.Gender
+            };
+
+            return Ok(result);
         }
 
-        [HttpPut("{id}")]
-        public IActionResult UpdateStudent(
-            int id,
-            UpdateStudentDTO dto)
-        {
-            var student = _customRepo.GetById(id);
 
-            if (student == null)
-                return NotFound("Student Not Found");
 
-            _mapper.Map(dto, student);
 
-            _customRepo.Update(student);
-         //   _customRepo.Save();
 
-            return NoContent();
-        }
 
-        [HttpDelete]
-        public IActionResult DeleteStudent(int id)
-        {
-            var student = _customRepo.GetById(id);
 
-            if (student == null)
-                return NotFound("Student Not Found");
-
-            _customRepo.Delete(student);
-          //  _customRepo.Save();
-
-            return NoContent();
-        }
+    
     }
 }
+

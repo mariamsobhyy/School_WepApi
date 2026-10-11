@@ -10,20 +10,14 @@ namespace School_WepApi.REPOs.Implementations
 
         private readonly AppDbContext _context;
 
-        public TeacherCustomRepo (AppDbContext context) :base(context)
+        public TeacherCustomRepo(AppDbContext context) : base(context)
         {
             _context = context;
         }
 
-        public ICollection<Teacher> Filter(int id, int salary)
+        public async Task<bool> HasCoursesAsync(int teacherId)
         {
-           var m = _context.teachers.Where(x => x.Id == id && x.Salary >= salary) .ToList();
-            return m;
-        }
-
-        public ICollection<Teacher> GetTeachersWithDepartment()
-        {
-            return _context.teachers.Include( x => x.Department).ToList();
+            return await _context.teachers.AnyAsync(t => t.Id == teacherId);
         }
     }
 }

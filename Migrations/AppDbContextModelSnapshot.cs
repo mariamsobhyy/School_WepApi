@@ -22,7 +22,7 @@ namespace School_WepApi.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("School_WepApi.Models.ClassRoom", b =>
+            modelBuilder.Entity("School_WepApi.Models.Course", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -30,84 +30,44 @@ namespace School_WepApi.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("Capacity")
+                    b.Property<int>("CreditHours")
                         .HasColumnType("int");
 
-                    b.Property<int>("GradeLevel")
+                    b.Property<int>("TeacherId")
                         .HasColumnType("int");
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("classRooms");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Capacity = 30,
-                            GradeLevel = 10,
-                            Name = "Room 101"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Capacity = 30,
-                            GradeLevel = 11,
-                            Name = "Room 102"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Capacity = 30,
-                            GradeLevel = 12,
-                            Name = "Room 103"
-                        });
-                });
-
-            modelBuilder.Entity("School_WepApi.Models.Department", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<string>("Name")
+                    b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("departments");
+                    b.HasIndex("TeacherId");
+
+                    b.ToTable("courses");
 
                     b.HasData(
                         new
                         {
                             Id = 1,
-                            Description = "Department of Mathematics",
-                            Name = "Mathematics"
+                            CreditHours = 3,
+                            TeacherId = 1,
+                            Title = "Programming Fundamentals"
                         },
                         new
                         {
                             Id = 2,
-                            Description = "Department of Physics",
-                            Name = "Physics"
+                            CreditHours = 4,
+                            TeacherId = 2,
+                            Title = "Database Systems"
                         },
                         new
                         {
                             Id = 3,
-                            Description = "Department of Chemistry",
-                            Name = "Chemistry"
+                            CreditHours = 3,
+                            TeacherId = 1,
+                            Title = "Web Development"
                         });
                 });
 
@@ -119,23 +79,23 @@ namespace School_WepApi.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("CourseId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("EnrollmentDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<decimal>("Grade")
+                    b.Property<decimal?>("Grade")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("StudentId")
                         .HasColumnType("int");
 
-                    b.Property<int>("SubjectId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("SubjectId");
+                    b.HasIndex("CourseId");
 
-                    b.HasIndex("StudentId", "SubjectId")
+                    b.HasIndex("StudentId", "CourseId")
                         .IsUnique();
 
                     b.ToTable("enrollments");
@@ -144,26 +104,25 @@ namespace School_WepApi.Migrations
                         new
                         {
                             Id = 1,
-                            EnrollmentDate = new DateTime(2023, 1, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Grade = 90m,
-                            StudentId = 1,
-                            SubjectId = 2
+                            CourseId = 1,
+                            EnrollmentDate = new DateTime(2026, 9, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Grade = 90.00m,
+                            StudentId = 1
                         },
                         new
                         {
                             Id = 2,
-                            EnrollmentDate = new DateTime(2023, 1, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Grade = 85m,
-                            StudentId = 2,
-                            SubjectId = 1
+                            CourseId = 2,
+                            EnrollmentDate = new DateTime(2026, 9, 2, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Grade = 85.50m,
+                            StudentId = 2
                         },
                         new
                         {
                             Id = 3,
-                            EnrollmentDate = new DateTime(2023, 1, 17, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Grade = 88m,
-                            StudentId = 3,
-                            SubjectId = 2
+                            CourseId = 3,
+                            EnrollmentDate = new DateTime(2026, 9, 3, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            StudentId = 3
                         });
                 });
 
@@ -175,33 +134,30 @@ namespace School_WepApi.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("ClassRoomId")
-                        .HasColumnType("int");
-
-                    b.Property<DateOnly>("DateOfBirth")
-                        .HasColumnType("date");
+                    b.Property<DateTime>("BirthDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("FullName")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<string>("FirstName")
+                    b.Property<string>("Gender")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("LastName")
+                    b.Property<string>("Phone")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PhoneNumber")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ClassRoomId");
+                    b.HasIndex("Email")
+                        .IsUnique();
 
                     b.ToTable("students");
 
@@ -209,36 +165,33 @@ namespace School_WepApi.Migrations
                         new
                         {
                             Id = 1,
-                            ClassRoomId = 1,
-                            DateOfBirth = new DateOnly(2000, 1, 1),
-                            Email = "basil.mohamed@example.com",
-                            FirstName = "Basil",
-                            LastName = "Mohamed",
-                            PhoneNumber = "01158589053"
+                            BirthDate = new DateTime(2010, 5, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "ali.hassan@school.com",
+                            FullName = "Ali Hassan",
+                            Gender = "Male",
+                            Phone = "01011111111"
                         },
                         new
                         {
                             Id = 2,
-                            ClassRoomId = 2,
-                            DateOfBirth = new DateOnly(2001, 5, 15),
-                            Email = "ahmed.ali@example.com",
-                            FirstName = "Ahmed",
-                            LastName = "Ali",
-                            PhoneNumber = "01158589054"
+                            BirthDate = new DateTime(2010, 8, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "mariam.ahmed@school.com",
+                            FullName = "Mariam Ahmed",
+                            Gender = "Female",
+                            Phone = "01022222222"
                         },
                         new
                         {
                             Id = 3,
-                            ClassRoomId = 3,
-                            DateOfBirth = new DateOnly(2002, 9, 20),
-                            Email = "fatima.mohamed@example.com",
-                            FirstName = "Fatima",
-                            LastName = "Mohamed",
-                            PhoneNumber = "01158589055"
+                            BirthDate = new DateTime(2009, 11, 5, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "omar.khaled@school.com",
+                            FullName = "Omar Khaled",
+                            Gender = "Male",
+                            Phone = "01033333333"
                         });
                 });
 
-            modelBuilder.Entity("School_WepApi.Models.Subject", b =>
+            modelBuilder.Entity("School_WepApi.Models.StudentProfile", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -246,57 +199,53 @@ namespace School_WepApi.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Description")
+                    b.Property<string>("Address")
                         .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
-                    b.Property<int>("MaxGrade")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Name")
+                    b.Property<string>("EmergencyContact")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("StudentId")
-                        .HasColumnType("int");
+                    b.Property<string>("ParentPhone")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("TeacherId")
+                    b.Property<int>("studentId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("StudentId");
+                    b.HasIndex("studentId")
+                        .IsUnique();
 
-                    b.HasIndex("TeacherId");
-
-                    b.ToTable("subjects");
+                    b.ToTable("studentProfiles");
 
                     b.HasData(
                         new
                         {
                             Id = 1,
-                            Description = "Mathematics subject",
-                            MaxGrade = 100,
-                            Name = "Mathematics",
-                            TeacherId = 1
+                            Address = "Nasr City, Cairo",
+                            EmergencyContact = "01211111111",
+                            ParentPhone = "01111111111",
+                            studentId = 1
                         },
                         new
                         {
                             Id = 2,
-                            Description = "Physics subject",
-                            MaxGrade = 100,
-                            Name = "Physics",
-                            TeacherId = 2
+                            Address = "Heliopolis, Cairo",
+                            EmergencyContact = "01222222222",
+                            ParentPhone = "01122222222",
+                            studentId = 2
                         },
                         new
                         {
                             Id = 3,
-                            Description = "Chemistry subject",
-                            MaxGrade = 100,
-                            Name = "Chemistry",
-                            TeacherId = 3
+                            Address = "Maadi, Cairo",
+                            EmergencyContact = "01233333333",
+                            ParentPhone = "01133333333",
+                            studentId = 3
                         });
                 });
 
@@ -308,32 +257,26 @@ namespace School_WepApi.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("DepartmentId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("FirstName")
+                    b.Property<string>("FullName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime>("HireDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Phone")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PhoneNumber")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
-                    b.Property<int>("Salary")
-                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("DepartmentId");
+                    b.HasIndex("Email")
+                        .IsUnique();
 
                     b.ToTable("teachers");
 
@@ -341,93 +284,33 @@ namespace School_WepApi.Migrations
                         new
                         {
                             Id = 1,
-                            DepartmentId = 1,
-                            Email = "john.doe@example.com",
-                            FirstName = "John",
-                            LastName = "Doe",
-                            PhoneNumber = "01158589056",
-                            Salary = 50000
+                            Email = "ahmed.samir@school.com",
+                            FullName = "Ahmed Samir",
+                            HireDate = new DateTime(2020, 9, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Phone = "01044444444"
                         },
                         new
                         {
                             Id = 2,
-                            DepartmentId = 2,
-                            Email = "jane.smith@example.com",
-                            FirstName = "Jane",
-                            LastName = "Smith",
-                            PhoneNumber = "01158589057",
-                            Salary = 55000
+                            Email = "nour.adel@school.com",
+                            FullName = "Nour Adel",
+                            HireDate = new DateTime(2021, 2, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Phone = "01055555555"
                         },
                         new
                         {
                             Id = 3,
-                            DepartmentId = 3,
-                            Email = "bob.johnson@example.com",
-                            FirstName = "Bob",
-                            LastName = "Johnson",
-                            PhoneNumber = "01158589058",
-                            Salary = 60000
-                        },
-                        new
-                        {
-                            Id = 4,
-                            DepartmentId = 1,
-                            Email = "alice.williams@example.com",
-                            FirstName = "Alice",
-                            LastName = "Williams",
-                            PhoneNumber = "01158589059",
-                            Salary = 52000
-                        },
-                        new
-                        {
-                            Id = 5,
-                            DepartmentId = 2,
-                            Email = "charlie.brown@example.com",
-                            FirstName = "Charlie",
-                            LastName = "Brown",
-                            PhoneNumber = "01158589060",
-                            Salary = 58000
+                            Email = "hany.mostafa@school.com",
+                            FullName = "Hany Mostafa",
+                            HireDate = new DateTime(2019, 8, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Phone = "01066666666"
                         });
                 });
 
-            modelBuilder.Entity("School_WepApi.Models.Enrollment", b =>
+            modelBuilder.Entity("School_WepApi.Models.Course", b =>
                 {
-                    b.HasOne("School_WepApi.Models.Student", "Student")
-                        .WithMany("Enrollments")
-                        .HasForeignKey("StudentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("School_WepApi.Models.Subject", "Subject")
-                        .WithMany("Enrollments")
-                        .HasForeignKey("SubjectId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Student");
-
-                    b.Navigation("Subject");
-                });
-
-            modelBuilder.Entity("School_WepApi.Models.Student", b =>
-                {
-                    b.HasOne("School_WepApi.Models.ClassRoom", "ClassRoom")
-                        .WithMany("Students")
-                        .HasForeignKey("ClassRoomId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("ClassRoom");
-                });
-
-            modelBuilder.Entity("School_WepApi.Models.Subject", b =>
-                {
-                    b.HasOne("School_WepApi.Models.Student", null)
-                        .WithMany("Subjects")
-                        .HasForeignKey("StudentId");
-
                     b.HasOne("School_WepApi.Models.Teacher", "Teacher")
-                        .WithMany("Subjects")
+                        .WithMany("Courses")
                         .HasForeignKey("TeacherId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -435,42 +318,51 @@ namespace School_WepApi.Migrations
                     b.Navigation("Teacher");
                 });
 
-            modelBuilder.Entity("School_WepApi.Models.Teacher", b =>
+            modelBuilder.Entity("School_WepApi.Models.Enrollment", b =>
                 {
-                    b.HasOne("School_WepApi.Models.Department", "Department")
-                        .WithMany("Teachers")
-                        .HasForeignKey("DepartmentId")
+                    b.HasOne("School_WepApi.Models.Course", "Course")
+                        .WithMany("Enrollments")
+                        .HasForeignKey("CourseId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Department");
+                    b.HasOne("School_WepApi.Models.Student", "Student")
+                        .WithMany("enrollments")
+                        .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Course");
+
+                    b.Navigation("Student");
                 });
 
-            modelBuilder.Entity("School_WepApi.Models.ClassRoom", b =>
+            modelBuilder.Entity("School_WepApi.Models.StudentProfile", b =>
                 {
-                    b.Navigation("Students");
+                    b.HasOne("School_WepApi.Models.Student", "student")
+                        .WithOne("StudentProfile")
+                        .HasForeignKey("School_WepApi.Models.StudentProfile", "studentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("student");
                 });
 
-            modelBuilder.Entity("School_WepApi.Models.Department", b =>
+            modelBuilder.Entity("School_WepApi.Models.Course", b =>
                 {
-                    b.Navigation("Teachers");
+                    b.Navigation("Enrollments");
                 });
 
             modelBuilder.Entity("School_WepApi.Models.Student", b =>
                 {
-                    b.Navigation("Enrollments");
+                    b.Navigation("StudentProfile");
 
-                    b.Navigation("Subjects");
-                });
-
-            modelBuilder.Entity("School_WepApi.Models.Subject", b =>
-                {
-                    b.Navigation("Enrollments");
+                    b.Navigation("enrollments");
                 });
 
             modelBuilder.Entity("School_WepApi.Models.Teacher", b =>
                 {
-                    b.Navigation("Subjects");
+                    b.Navigation("Courses");
                 });
 #pragma warning restore 612, 618
         }

@@ -10,97 +10,90 @@ namespace School_WepApi.Data
 
 
          
-        public DbSet <ClassRoom> classRooms { get; set; }
-        public DbSet<Department> departments { get; set; }
+
         public DbSet<Teacher> teachers { get; set; }
         public DbSet<Student> students { get; set; }
-        public DbSet<Subject> subjects { get; set; }
+        public DbSet<Course> courses { get; set; }
+
         public DbSet<Enrollment> enrollments { get; set; }
+
+        public DbSet<StudentProfile> studentProfiles { get; set; }
 
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Teacher>()
-               .HasOne(s => s.Department)
-               .WithMany(x => x.Teachers)
-               .HasForeignKey(x => x.DepartmentId);
-
             modelBuilder.Entity<Student>()
-                .HasOne(x => x.ClassRoom)
-                .WithMany(x => x.Students)
-                .HasForeignKey(x => x.ClassRoomId)
-                .OnDelete(DeleteBehavior.Cascade);
+               .HasOne(s => s.StudentProfile)
+               .WithOne(s => s.student)
+               .HasForeignKey<StudentProfile>(p => p.studentId);
+
+            modelBuilder.Entity<Course>()
+                .HasOne(x => x.Teacher)
+                .WithMany(x => x.Courses)
+                .HasForeignKey(x => x.TeacherId);
+
 
             modelBuilder.Entity<Enrollment>()
                 .HasOne(x => x.Student)
-                .WithMany(x => x.Enrollments)
-                .HasForeignKey(x => x.StudentId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .WithMany(x => x.enrollments)
+                .HasForeignKey(x => x.StudentId);
+
 
             modelBuilder.Entity<Enrollment>()
-                .HasOne(x => x.Subject)
+                .HasOne(x => x.Course)
                 .WithMany(x => x.Enrollments)
-                .HasForeignKey(x => x.SubjectId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .HasForeignKey(x => x.CourseId);
 
 
-            modelBuilder.Entity<Subject>()
-                .HasOne(x => x.Teacher)
-                .WithMany(x => x.Subjects)
-                .HasForeignKey(x => x.TeacherId)
-                .OnDelete(DeleteBehavior.Cascade);
-
-
-            modelBuilder.Entity<ClassRoom>()
-                .HasMany(x => x.Students)
-                .WithOne(x => x.ClassRoom)
-                .HasForeignKey(x => x.ClassRoomId);
+            modelBuilder.Entity<Enrollment>()
+                  .HasIndex(e => new { e.StudentId, e.CourseId })
+                  .IsUnique();
 
 
 
 
+            modelBuilder.Entity<Teacher>()
+            .HasData(
+            new Teacher { Id = 1, FullName = "Ahmed Samir", Email = "ahmed.samir@school.com", Phone = "01044444444", HireDate = new DateTime(2020, 9, 1) },
+            new Teacher { Id = 2, FullName = "Nour Adel", Email = "nour.adel@school.com", Phone = "01055555555", HireDate = new DateTime(2021, 2, 15) },
+            new Teacher { Id = 3, FullName = "Hany Mostafa", Email = "hany.mostafa@school.com", Phone = "01066666666", HireDate = new DateTime(2019, 8, 20) }
+            );
 
-            // Define a unique index on the combination of StudentId and SubjectId in the Enrollment entity
-            modelBuilder.Entity<Enrollment>().HasIndex(x => new { x.StudentId, x.SubjectId }).IsUnique();
+            
+            modelBuilder.Entity<Student>()
+                .HasData(
+                new Student { Id = 1, FullName = "Ali Hassan", Email = "ali.hassan@school.com", Phone = "01011111111", BirthDate = new DateTime(2010, 5, 12), Gender = "Male" },
+                new Student { Id = 2, FullName = "Mariam Ahmed", Email = "mariam.ahmed@school.com", Phone = "01022222222", BirthDate = new DateTime(2010, 8, 20), Gender = "Female" },
+                new Student { Id = 3, FullName = "Omar Khaled", Email = "omar.khaled@school.com", Phone = "01033333333", BirthDate = new DateTime(2009, 11, 5), Gender = "Male" }
+            );
 
-            modelBuilder.Entity<Student>().Property(x => x.Email).IsRequired();
-            modelBuilder.Entity<Student>().Property(x => x.Email).HasMaxLength(100);
-            modelBuilder.Entity<Student>().Property(x => x.DateOfBirth).IsRequired();
+           
+            modelBuilder.Entity<StudentProfile>().HasData(
+                new StudentProfile { Id = 1, Address = "Nasr City, Cairo", ParentPhone = "01111111111", EmergencyContact = "01211111111", studentId = 1 },
+                new StudentProfile { Id = 2, Address = "Heliopolis, Cairo", ParentPhone = "01122222222", EmergencyContact = "01222222222", studentId = 2 },
+                new StudentProfile { Id = 3, Address = "Maadi, Cairo", ParentPhone = "01133333333", EmergencyContact = "01233333333", studentId = 3 }
+            );
 
+            
+            modelBuilder.Entity<Course>().HasData(
+                new Course { Id = 1, Title = "Programming Fundamentals", CreditHours = 3, TeacherId = 1 },
+                new Course { Id = 2, Title = "Database Systems", CreditHours = 4, TeacherId = 2 },
+                new Course { Id = 3, Title = "Web Development", CreditHours = 3, TeacherId = 1 }
+            );
 
-
-
-            modelBuilder.Entity<ClassRoom>().HasData(new ClassRoom { Id = 1, Name = "Room 101", GradeLevel = 10, Capacity = 30 });
-            modelBuilder.Entity<ClassRoom>().HasData(new ClassRoom { Id = 2, Name = "Room 102", GradeLevel = 11, Capacity = 30 });
-            modelBuilder.Entity<ClassRoom>().HasData(new ClassRoom { Id = 3, Name = "Room 103", GradeLevel = 12, Capacity = 30 });
-
-            modelBuilder.Entity<Student>().HasData(new Student { Id = 1, FirstName = "Basil", LastName = "Mohamed", Email = "basil.mohamed@example.com", DateOfBirth = new DateOnly(2000, 1, 1), ClassRoomId = 1, PhoneNumber = "01158589053" });
-            modelBuilder.Entity<Student>().HasData(new Student { Id = 2, FirstName = "Ahmed", LastName = "Ali", Email = "ahmed.ali@example.com", DateOfBirth = new DateOnly(2001, 5, 15), ClassRoomId = 2, PhoneNumber = "01158589054" });
-            modelBuilder.Entity<Student>().HasData(new Student { Id = 3, FirstName = "Fatima", LastName = "Mohamed", Email = "fatima.mohamed@example.com", DateOfBirth = new DateOnly(2002, 9, 20), ClassRoomId = 3, PhoneNumber = "01158589055" });
-
-            modelBuilder.Entity<Department>().HasData(new Department { Id = 1, Name = "Mathematics", Description = "Department of Mathematics" });
-            modelBuilder.Entity<Department>().HasData(new Department { Id = 2, Name = "Physics", Description = "Department of Physics" });
-            modelBuilder.Entity<Department>().HasData(new Department { Id = 3, Name = "Chemistry", Description = "Department of Chemistry" });
-
-            modelBuilder.Entity<Teacher>().HasData(new Teacher { Id = 1, FirstName = "John", LastName = "Doe", Email = "john.doe@example.com", DepartmentId = 1, Salary = 50000, PhoneNumber = "01158589056" });
-            modelBuilder.Entity<Teacher>().HasData(new Teacher { Id = 2, FirstName = "Jane", LastName = "Smith", Email = "jane.smith@example.com", DepartmentId = 2, Salary = 55000, PhoneNumber = "01158589057" });
-            modelBuilder.Entity<Teacher>().HasData(new Teacher { Id = 3, FirstName = "Bob", LastName = "Johnson", Email = "bob.johnson@example.com", DepartmentId = 3, Salary = 60000, PhoneNumber = "01158589058" });
-            modelBuilder.Entity<Teacher>().HasData(new Teacher { Id = 4, FirstName = "Alice", LastName = "Williams", Email = "alice.williams@example.com", DepartmentId = 1, Salary = 52000, PhoneNumber = "01158589059" });
-            modelBuilder.Entity<Teacher>().HasData(new Teacher { Id = 5, FirstName = "Charlie", LastName = "Brown", Email = "charlie.brown@example.com", DepartmentId = 2, Salary = 58000, PhoneNumber = "01158589060" });
-
-
-            modelBuilder.Entity<Subject>().HasData(new Subject { Id = 1, Name = "Mathematics", Description = "Mathematics subject", TeacherId = 1, MaxGrade = 100 });
-            modelBuilder.Entity<Subject>().HasData(new Subject { Id = 2, Name = "Physics", Description = "Physics subject", TeacherId = 2, MaxGrade = 100 });
-            modelBuilder.Entity<Subject>().HasData(new Subject { Id = 3, Name = "Chemistry", Description = "Chemistry subject", TeacherId = 3, MaxGrade = 100 });
-
-            modelBuilder.Entity<Enrollment>().HasData(new Enrollment { Id = 1, StudentId = 1, SubjectId = 2, Grade = 90, EnrollmentDate = new DateTime(2023, 1, 15) });
-            modelBuilder.Entity<Enrollment>().HasData(new Enrollment { Id = 2, StudentId = 2, SubjectId = 1, Grade = 85, EnrollmentDate = new DateTime(2023, 1, 16) });
-            modelBuilder.Entity<Enrollment>().HasData(new Enrollment { Id = 3, StudentId = 3, SubjectId = 2, Grade = 88, EnrollmentDate = new DateTime(2023, 1, 17) });
-
-
+            
+            modelBuilder.Entity<Enrollment>().HasData(
+                new Enrollment { Id = 1, StudentId = 1, CourseId = 1, EnrollmentDate = new DateTime(2026, 9, 1), Grade = 90.00m },
+                new Enrollment { Id = 2, StudentId = 2, CourseId = 2, EnrollmentDate = new DateTime(2026, 9, 2), Grade = 85.50m },
+                new Enrollment { Id = 3, StudentId = 3, CourseId = 3, EnrollmentDate = new DateTime(2026, 9, 3), Grade = null }
+            );
         }
 
 
+
     }
+
+
+    
 }

@@ -4,7 +4,11 @@ namespace School_WepApi.REPOs.Intarfaces
 {
     public interface IEnrollment :IGenaricRepo<Enrollment>
     {
-       ICollection<Enrollment> GetEnrollmentsWithStudentAndSubject();
-        Enrollment EndPoint6(int subjectid);
+      Task <IEnumerable<Enrollment>> GetByCourseAsync (int courseid);
+      Task <IEnumerable<Enrollment>> GetByStudentAsync (int studentid);
+
+        Task<bool> IsStudentEnrolledAsync(int studentId, int courseId);
+
+
     }
 }

@@ -5,8 +5,9 @@ namespace School_WepApi.REPOs.Intarfaces
 {
     public interface ITeacher : IGenaricRepo<Teacher>
     {
-        ICollection<Teacher> GetTeachersWithDepartment();
-        ICollection<Teacher> Filter(int id, int salary);
-       
+
+        Task<bool> HasCoursesAsync(int teacherId);
+
+
     }
 }

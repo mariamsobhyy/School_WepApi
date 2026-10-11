@@ -4,45 +4,37 @@ namespace School_WepApi.DTOs
 {
     public class TeacherDTO
     {
-      
-            public int Id { get; set; }
-            [EmailAddress]
-            public string Email { get; set; } = string.Empty;
-            [MaxLength(20)]
-            public string PhoneNumber { get; set; } = string.Empty;
-            public string FullName { get; set; } = string.Empty;
-            public string DepartmentName { get; set; } = string.Empty;
-            [Required, Range(1, int.MaxValue)]
-            public int Salary { get; set; }
-        }
-        public class TeacherDTOEndPoint12
-        {
-            public int Id { get; set; }
-            public string FullName { get; set; } = string.Empty;
-        }
-        public class CreateTeacherDTO
-        {
-            [EmailAddress]
-            public string Email { get; set; } = string.Empty;
-            [MaxLength(20)]
-            public string PhoneNumber { get; set; } = string.Empty;
-            public string FirstName { get; set; } = string.Empty;
-            public string LastName { get; set; } = string.Empty;
-            [Required, Range(1, int.MaxValue)]
-            public int Salary { get; set; }
-            public int DepartmentId { get; set; }
-        }
-        public class UpdateTeacherDTO
-        {
-            [EmailAddress]
-            public string Email { get; set; } = string.Empty;
-            [MaxLength(20)]
-            public string PhoneNumber { get; set; } = string.Empty;
-            public string FirstName { get; set; } = string.Empty;
-            public string LastName { get; set; } = string.Empty;
-            [Required, Range(1, int.MaxValue)]
-            public int Salary { get; set; }
-            public int DepartmentId { get; set; }
-        }
-    
+
+
+        [Required]
+        [StringLength(100, MinimumLength = 3)]
+        public string FullName { get; set; } = string.Empty;
+
+        [Required]
+        [EmailAddress]
+        public string Email { get; set; } = string.Empty;
+
+        [Required]
+        [Phone]
+        public string Phone { get; set; } = string.Empty;
+
+        [Required]
+        public DateTime HireDate { get; set; }
+
+    }
+
+    public class ReadTeacherDto
+    {
+
+        public int Id { get; set; }
+
+        public string FullName { get; set; }
+
+        public string Email { get; set; }
+
+        public string Phone { get; set; }
+
+        public DateTime HireDate { get; set; }
+
+    }
 }

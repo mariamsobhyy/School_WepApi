@@ -16,25 +16,29 @@ namespace School_WepApi.REPOs.Implementations
             _context = context;
             db = _context.Set<T>();
         }
-        public void Add(T Entity)
+        public async Task Add(T Entity)
         {
-          db.Add(Entity);
+          await db.AddAsync(Entity);
 
         }
 
-        public void Delete(T Entity)
+        public async Task Delete(int id)
         {
-            db.Remove(Entity);
+            var entity = await db.FindAsync(id);
+            if (entity != null)
+            {
+                db.Remove(entity);
+            }
         }
 
-        public ICollection<T> GetAll()
+        public async Task  <ICollection<T>> GetAll()
         {
-            return db.ToList();
+            return await db.ToListAsync();
         }
 
-        public T GetById(int id)
+        public async Task <T>GetById(int id)
         {
-            return db.Find(id);
+            return await db.FindAsync(id);
         }
 
         public void Update(T Entity)
@@ -42,9 +46,5 @@ namespace School_WepApi.REPOs.Implementations
             db.Update(Entity);
         }
 
-        public void SaveChanges ()
-        {
-            _context.SaveChanges();
-        }
     }
 }
